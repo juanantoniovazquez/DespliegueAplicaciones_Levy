@@ -1,0 +1,13 @@
+<VirtualHost *:{{ http_port }}>
+    ServerAdmin administrador@{{ http_host }}
+    ServerName {{ http_host }}
+    ServerAlias www.{{ http_host }}
+    DocumentRoot /var/www/{{ http_host }}/{{ name_project}}
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    <Directory /var/www/{{ http_host }}/{{ name_project}}>
+          Options -Indexes
+		  DirectoryIndex index.html
+    </Directory>
+</VirtualHost>

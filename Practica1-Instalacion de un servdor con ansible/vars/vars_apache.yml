@@ -1,0 +1,15 @@
+---
+app_user: "administrador"
+http_host: "jvazquez.com"
+http_conf: "jvazquez.com.conf"
+http_conf_two: "appjvazquez.com.conf"
+index_app: "Formulario.html"
+ip_server: "192.168.1.8"
+ip_cliente: "192.168.1.10"
+http_port: "80"
+disable_default: true
+name_project: "Formulario"
+psw_admin_bd: "Admin123"
+user_bd: "administrador"
+db_name: "usuarios"
+file_db: "usuarios.sql"

@@ -1,0 +1,148 @@
+---
+- hosts: serverFinal
+  become: yes
+  vars_files:
+    - vars/vars_apache.yml
+  tasks:
+    
+  #actualización de cahce y más
+    - name: Abrir puerto 22 para SSH
+      ufw:
+        rule: allow
+        port: 22
+
+    - name: Habilitar el firewall
+      ufw:
+        state: enabled
+      
+    - name: Actualizar cache.
+      apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+      loop: ['aptitude']
+    
+   #Instalación de paquetes necesarios Apache, MySQL y PHP
+    - name: Instalación paquetes necesarios
+      apt: name={{ item }} update_cache=yes state=latest
+      loop: [ 'apache2', 'mysql-client', 'mysql-server', 'python3-pymysql', 'php', 'php-mysql', 'libapache2-mod-php']
+      
+   #Configuración para la paguina wweb
+    - name: Moviendo código fuente de la aplicación web
+      copy:
+        src: "{{ name_project }}"
+        dest: "/var/www/{{ http_host }}"
+    
+    - name: Creación del directorio raiz
+      file: 
+        path: "/var/www/{{ http_host }}"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '755'
+
+    - name: Definiendo el host virtual para la web
+      template: 
+        src: "files/apache.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ http_conf }}"
+        
+    - name: Definiendo el host virtual para la app
+      template: 
+        src: "files/apache.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ http_conf_two }}"
+        
+    - name: Alterando el host virtual para la app
+      lineinfile:
+        path: "/etc/apache2/sites-available/{{ http_conf_two }}"
+        regexp: 'ServerAlias www.{{ http_host }}'
+        line: '    ServerAlias app.{{ http_host }}'
+    
+    - name: Alterando el host virtual para la app para pag de incio
+      lineinfile:
+        path: "/etc/apache2/sites-available/{{ http_conf_two }}"
+        regexp: 'DirectoryIndex index.html'
+        line: '        DirectoryIndex {{ index_app }}'
+    
+    - name: Habilitar el nuevo VirtualHost
+      command: a2ensite {{ http_conf }}
+      
+    - name: Habilitar el nuevo VirtualHost
+      command: a2ensite {{ http_conf_two }}
+      
+    - name: Desabilitando el sitio por defecto de Apache
+      shell: /usr/sbin/a2dissite 000-default.conf
+      when: disable_default
+      
+    - name: Reinciar Apache para aplicar la configuración
+      service:
+        name: apache2
+        state: restarted
+        
+    #Configurar nombre de dominio en servidor Ubuntu
+    - name: Establecer el nombre de dominio
+      hostname: 
+        name: '{{ http_host }}'
+        #'localhost'
+        #'{{ http_host }}'
+        
+    - name: Actualizar el archivo /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regexp: "127.0.1.1"
+        line: "127.0.1.1 {{ app_user }}"
+        #"127.0.1.1 localhost"
+
+    - name: Ejecutar a2ensite para aplicar la configuración nueva
+      command: sudo a2ensite {{ http_conf }}
+    
+    - name: Reinciar el servicio apache2
+      command: sudo systemctl restart apache2
+    
+    #Configurar MySQL
+    - name: Crear usuario administrador con constraseña con todos los permisos
+      mysql_user:
+        name: '{{ user_bd }}'
+        password: '{{ psw_admin_bd }}'
+        state: present
+        priv: "*.*:ALL,GRANT"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      
+    - name: Reinciar el servicio de MySQL
+      service:
+        name: mysql
+        state: restarted
+      
+    - name: Copiar el archivo sql de la base de datos
+      copy:
+        src: 'files/{{ file_db }}'
+        dest: '/tmp/{{ file_db }}'
+    
+    - name: Cargar esquema de bases de datos
+      mysql_db:
+        name: "{{ db_name }}"
+        state: import
+        target: "/tmp/{{ file_db }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        
+    - name: Eliminar cuentas anónimas
+      mysql_user:
+        name: ''
+        host: "{{ item }}"
+        state: absent
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      with_items:
+        - 'localhost'
+        - 127.0.0.1
+    
+    - name: Eliminar base de datos de prueba
+      mysql_db:
+        name: test
+        state: absent
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+   
+   
+   #Configuración firewall
+    - name: Abrir puerto 80 para tráfico HTTP
+      ufw:
+        rule: allow
+        port: "{{ http_port }}"
+        
+    - name: Habilitar el firewall
+      ufw:
+        state: enabled

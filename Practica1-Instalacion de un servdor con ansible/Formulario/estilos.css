@@ -1,0 +1,134 @@
+/* Hoja de estilo para login.html, registro.php e index.php */
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #fff, #e7e7e7);
+}
+
+h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+/* Estilos para login.html */
+
+.login {
+  width: 500px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100px;
+  height: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  background-color: white;
+}
+
+input[type="submit"] {
+  background-color: #fff;
+  color: black;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+
+  /* Animación de entrada */
+  animation: slide-in 0.5s ease-in-out;
+
+  /* Efecto de hover */
+  &:hover {
+    background-color: #ccc;
+  }
+}
+
+/* Estilos para registro.php */
+
+.registro {
+  width: 500px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="tel"] {
+  width: 100px;
+  height: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  background-color: white;
+}
+
+input[type="submit"] {
+  background-color: #fff;
+  color: black;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+
+  /* Animación de entrada */
+  animation: slide-in 0.5s ease-in-out;
+
+  /* Efecto de hover */
+  &:hover {
+    background-color: #ccc;
+  }
+}
+
+/* Estilos para index.php */
+
+.datos {
+  margin: 0 auto;
+  width: 500px;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Animación de entrada de los datos */
+.datos p {
+  animation: fade-in 0.5s ease-in-out;
+}
+
+/* Efecto de hover de los datos */
+.datos p:hover {
+  background-color: #ccc;
+}
+
+/* Paleta de colores en escala de grises */
+
+body {
+  background: linear-gradient(to right, #fff, #e7e7e7);
+}
+
+h1 {
+  color: black;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type
